@@ -31,10 +31,12 @@ If you want to compilation a projects code , you only need
 ```
 eclc -f <folder_name> --cpp-code
 ```
+### Note
+Under normal circumstances, you don't need to add parameters to specify the programming language unless the compiler reports an "ERROR 019 Unknown language" error.
 That's all of it!
 ## License
 We use GNU GPL Version 3 , 'cause myself like GNU license , I'm used Apache license in a RUI apps , but ... I don't like that
-
+However, some runtime libraries are not free software. For this, we have added an [additional clause](COPYING_RUNTIME).
 ---------------
 
 Music:I love—love GNU—U oh oh oh oh oh (rising key)—but they don't even glance at me—eye—.<br>
