@@ -9,6 +9,8 @@ if (!(Get-Command gcc -ErrorAction SilentlyContinue)) {
 
 # Build
 Write-Host "Building..." -ForegroundColor Cyan
+git clone https://github.com/E-comOS-Operation-System/ECLC.git
+Set-Location ECLC
 make clean
 make
 
