@@ -29,7 +29,7 @@ static bool is_identifier_char(char c) {
 static Token* create_token(TokenType type, const char* value, int line, int column) {
     Token* token = xmalloc(sizeof(Token));
     token->type = type;
-    token->value = value ? strcmp(value) : NULL;
+    token->value = value ? strcmp(value,value) : NULL;
     token->line = line;
     token->column = column;
     return token;
