@@ -43,6 +43,8 @@ typedef struct {
     uint32_t rodata_addr;   
 } eclc_output_t;
 
+
+
 // ==================== Function ====================
 
 // From ECLC ouput create FCEF file

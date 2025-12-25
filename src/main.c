@@ -23,6 +23,7 @@
 #include <string.h>
 #include <dirent.h>
 #include <sys/stat.h>
+#include <fcef.h>
 
 // Read file content
 static char* read_file(const char* filename) {
@@ -52,14 +53,6 @@ static bool is_c_file(const char* filename) {
 
 // Generate executable from AST
 static int generate_executable(ASTNode* ast, const char* output_file) {
-    // Create temporary C file
-    FILE* c_file = fopen("temp.c", "w");
-    if (!c_file) {
-        fprintf(stderr, "Error: Cannot create temporary C file\n");
-        return 1;
-    }
-    
-    // Find return value from AST
     int return_value = 0;
     if (ast && ast->left && ast->left->left && ast->left->left->left) {
         ASTNode* return_node = ast->left->left->left;
@@ -68,22 +61,25 @@ static int generate_executable(ASTNode* ast, const char* output_file) {
         }
     }
     
-    // Generate C code
-    fprintf(c_file, "int main() {\n");
-    fprintf(c_file, "    return %d;\n", return_value);
-    fprintf(c_file, "}\n");
+    FILE* fcef_file = fopen(output_file, "wb");
+    if (!fcef_file) {
+        fprintf(stderr, "Error: Cannot create output file '%s'\n", output_file);
+        return 1;
+    }
     
-    fclose(c_file);
+    fcef_header_t header = {0};
+    fcef_init_header(&header);
+    header.file_size = sizeof(header) + 4; 
     
-    // Compile with gcc
-    char cmd[512];
-    snprintf(cmd, sizeof(cmd), "gcc -o %s temp.c 2>/dev/null", output_file);
-    int result = system(cmd);
+ 
+    uint8_t ret_instruction[] = {0xC0, 0x03, 0x5F, 0xD6};  // ret
     
-    // Clean up
-    remove("temp.c");
     
-    return result == 0 ? 0 : 1;
+    fwrite(&header, sizeof(header), 1, fcef_file);
+    fwrite(ret_instruction, sizeof(ret_instruction), 1, fcef_file);
+    fclose(fcef_file);
+    
+    printf("Generated FCEF file: %s (return value: %d)\n", output_file, return_value);
 }
 
 // Compile single file with output (quiet mode for folder compilation)

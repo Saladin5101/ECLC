@@ -1,10 +1,30 @@
-// eclc_fcef.c
-#include "../../include/fcef/fcef.h"
+#include "fcef/eclc_fcef.h"
+#include "fcef.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 // 从 ECLC 输出创建 FCEF 文件
+void fcef_init_header(fcef_header_t *header) {
+    if (!header) return;
+
+    uint8_t *magic_bytes = (uint8_t*)&header->magic;
+    magic_bytes[0] = 0x46;  // 'F' 
+    magic_bytes[1] = 0x43;  // 'C'
+    magic_bytes[2] = 0x45;  // 'E'
+    magic_bytes[3] = 0x46;  // 'F' 
+    header->version_major = 1;  // Main version
+    header->version_minor = 0;  // Sub version
+    
+    
+    header->crc32 = 0;
+    
+   
+    header->file_size = 0;
+    
+    memset(header->reserved, 0, sizeof(header->reserved));
+}
+
 void *eclc_to_fcef(const eclc_output_t *output, size_t *out_size) {
     if (!output || !output->code || output->code_size == 0) {
         if (out_size) *out_size = 0;

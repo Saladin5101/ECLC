@@ -18,6 +18,7 @@
 #include "eclc/common.h"
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 typedef struct {
     char** input_files;

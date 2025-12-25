@@ -1,6 +1,6 @@
 # Compiler and flags
 CC = gcc
-CFLAGS = -Wall -Wextra -std=c99 -Iinclude
+CFLAGS = -Wall -Wextra -std=c99 -I$(ICDDIR) -I$(FCEFDIR)
 LDFLAGS = 
 LDLIBS = 
 
@@ -8,6 +8,8 @@ LDLIBS =
 SRCDIR = src
 OBJDIR = obj
 BINDIR = bin
+ICDDIR = include
+FCEFDIR = fcef/include
 
 # Source files - organized by module
 SOURCES = $(SRCDIR)/main.c \
@@ -19,20 +21,13 @@ SOURCES = $(SRCDIR)/main.c \
           $(SRCDIR)/frontend/error.c \
           $(SRCDIR)/fcef/fcef.c
 
-# FCEF-specific sources (for ECLC to FCEF conversion)
-FCEF_SOURCES = $(SRCDIR)/fcef/eclc_fcef.c
-
-# Combine all sources
-ALL_SOURCES = $(SOURCES) $(FCEF_SOURCES)
-
 # Object files
-OBJECTS = $(ALL_SOURCES:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
+OBJECTS = $(SOURCES:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
 
 # Targets
 TARGET = $(BINDIR)/eclc
-FCEF_TEST = $(BINDIR)/fcef_test
 
-.PHONY: all clean fcef-test
+.PHONY: all clean
 
 all: $(TARGET)
 
@@ -44,12 +39,6 @@ $(TARGET): $(OBJECTS) | $(BINDIR)
 $(OBJDIR)/%.o: $(SRCDIR)/%.c | $(OBJDIR)
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
-
-# FCEF test executable
-fcef-test: $(FCEF_TEST)
-
-$(FCEF_TEST): $(OBJDIR)/fcef/fcef.o $(OBJDIR)/fcef/eclc_fcef.o | $(BINDIR)
-	$(CC) $^ -o $@
 
 # Directory creation
 $(OBJDIR):
@@ -68,6 +57,7 @@ install: $(TARGET)
 
 # Debug info
 debug-info:
-	@echo "Sources: $(ALL_SOURCES)"
+	@echo "Sources: $(SOURCES)"
 	@echo "Objects: $(OBJECTS)"
 	@echo "Target: $(TARGET)"
+	@echo "CFLAGS: $(CFLAGS)"
